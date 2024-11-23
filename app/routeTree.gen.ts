@@ -11,14 +11,14 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as WsImport } from './routes/ws'
+import { Route as GameImport } from './routes/game'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
 
-const WsRoute = WsImport.update({
-  id: '/ws',
-  path: '/ws',
+const GameRoute = GameImport.update({
+  id: '/game',
+  path: '/game',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +39,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/ws': {
-      id: '/ws'
-      path: '/ws'
-      fullPath: '/ws'
-      preLoaderRoute: typeof WsImport
+    '/game': {
+      id: '/game'
+      path: '/game'
+      fullPath: '/game'
+      preLoaderRoute: typeof GameImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/ws': typeof WsRoute
+  '/game': typeof GameRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/ws': typeof WsRoute
+  '/game': typeof GameRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/ws': typeof WsRoute
+  '/game': typeof GameRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ws'
+  fullPaths: '/' | '/game'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ws'
-  id: '__root__' | '/' | '/ws'
+  to: '/' | '/game'
+  id: '__root__' | '/' | '/game'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  WsRoute: typeof WsRoute
+  GameRoute: typeof GameRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  WsRoute: WsRoute,
+  GameRoute: GameRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +97,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/ws"
+        "/game"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/ws": {
-      "filePath": "ws.tsx"
+    "/game": {
+      "filePath": "game.tsx"
     }
   }
 }

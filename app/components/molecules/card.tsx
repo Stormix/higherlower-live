@@ -5,10 +5,17 @@ const Card = ({
   children,
   className,
   header,
-}: { children: React.ReactNode; className?: string; header?: React.ReactNode }) => {
+  stickyHeader = false,
+}: { children: React.ReactNode; className?: string; header?: React.ReactNode; stickyHeader?: boolean }) => {
   return (
     <Container className={cn("flex flex-col gap-2", className)}>
-      <div className="bg-border uppercase flex items-center py-4 px-8 justify-center">{header}</div>
+      <div
+        className={cn("bg-border uppercase flex items-center py-4 px-8 justify-center gap-2", {
+          "sticky top-0": stickyHeader,
+        })}
+      >
+        {header}
+      </div>
       <div className="p-4">{children}</div>
     </Container>
   );

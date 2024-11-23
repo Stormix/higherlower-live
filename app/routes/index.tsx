@@ -1,38 +1,35 @@
-import Card from "@/components/molecules/card";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
-
-async function readCount() {
-  return 10;
-}
-
-const getCount = createServerFn({
-  method: "GET",
-}).handler(() => {
-  return readCount();
-});
-
-const updateCount = createServerFn({ method: "POST" })
-  .validator((d: number) => d)
-  .handler(async ({ data }) => {
-    const count = await readCount();
-    return count + data;
-  });
+import Button from "@/components/atoms/button";
+import { signIn } from "@/lib/client/auth";
+import { createFileRoute } from "@tanstack/react-router";
+import { FaTwitch } from "react-icons/fa";
 
 export const Route = createFileRoute("/")({
-  component: Home,
-  loader: async () => await getCount(),
+  component: Index,
 });
 
-function Home() {
-  const router = useRouter();
-  const state = Route.useLoaderData();
-
+function Index() {
   return (
-    <>
-      <Card header="HigherOrLower">
-        <div>Hello</div>
-      </Card>
-    </>
+    <main className="w-screen h-screen flex flex-col items-center justify-center gap-4">
+      <div className="flex flex-col items-center justify-center gap-4 w-1/4">
+        <h1 className="text-gradient text-4xl font-bold">HigherOrLower</h1>
+        <h2 className="text-sm uppercase">Controlled by Twitch Chat</h2>
+
+        <Button
+          aria-label="Login with Twitch"
+          intent="twitch"
+          icon={<FaTwitch size={24} />}
+          className="gap-4 px-8 my-8"
+          onClick={() =>
+            signIn.social({
+              provider: "twitch",
+              callbackURL: "/game",
+            })
+          }
+        >
+          Login with Twitch
+        </Button>
+        <p className="text-xs text-muted text-center leading-5">By signing in you accept our TOS & Privacy policy.</p>
+      </div>
+    </main>
   );
 }
