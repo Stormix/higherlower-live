@@ -3,6 +3,7 @@ WORKDIR /usr/src/app
 
 ARG BETTER_AUTH_URL
 ENV BETTER_AUTH_URL ${BETTER_AUTH_URL}
+ENV VITE_APP_URL ${BETTER_AUTH_URL}
 
 RUN apt-get -y update; apt-get -y install curl
 ARG NODE_VERSION=20.18.0

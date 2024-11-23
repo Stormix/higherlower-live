@@ -12,7 +12,7 @@ export const buttonVariants = cva(
         twitch: ["bg-twitch", "text-white", "border-twitch-dark", "hover:bg-twitch-dark"],
       },
       size: {
-        small: ["py-1", "px-2"],
+        small: ["py-3", "px-3"],
         medium: ["py-4", "px-4"],
       },
     },

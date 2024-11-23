@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --chatexto: 144, 51%, 34%;
-    --chatexto-yellow: 7, 62%, 47%;
+    --blue: 212, 69%, 44%;
+    --red: 4, 76%, 47%;
     --border: #131413;
     --background: #0c0d0c;
   }
@@ -16,18 +16,18 @@ body {
 }
 
 .text-gradient {
-  background: linear-gradient(101deg, hsl(var(--chatexto)) 10%, hsl(var(--chatexto-yellow)) 92.73%);
+  background: linear-gradient(101deg, hsl(var(--blue)) 10%, hsl(var(--red)) 92.73%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .bg-gradient {
-  background: linear-gradient(101deg, hsl(var(--chatexto)) 10%, hsl(var(--chatexto-yellow)) 92.73%);
+  background: linear-gradient(101deg, hsl(var(--blue)) 10%, hsl(var(--red)) 92.73%);
 }
 
 .border-gradient {
-  border-image: linear-gradient(101deg, hsl(var(--chatexto)) 10%, hsl(var(--chatexto-yellow)) 92.73%);
+  border-image: linear-gradient(101deg, hsl(var(--blue)) 10%, hsl(var(--red)) 92.73%);
 }
 
 /**

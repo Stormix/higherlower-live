@@ -4,7 +4,17 @@ export type MessageType =
   | "subscribe"
   | "unsubscribe"
   | "twitchMessage"
-  | "connected";
+  | "connected"
+  | "play"
+  | "startGame"
+  | "votes"
+  | "endGame";
+
+export type Option = {
+  label: string;
+  image: string;
+  votes: number;
+};
 
 export type MessageData = {
   subscribe: { channel: string };
@@ -12,6 +22,13 @@ export type MessageData = {
   twitchMessage: TwitchMessage;
   // biome-ignore lint/complexity/noBannedTypes: <explanation>
   connected: {};
+  play: { userId: string; lastGameId?: string };
+  startGame: {
+    options: Option[];
+    gameId: string;
+  };
+  endGame: { gameId: string; winner: string; answer: number };
+  votes: { options: Option[]; gameId: string };
 };
 
 export type Message = {
