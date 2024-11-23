@@ -1,8 +1,22 @@
 {
-	"folders": [
-		{
-			"path": ".."
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": ".."
+    }
+  ],
+  "settings": {
+    "editor.quickSuggestions": {
+      "strings": "on"
+    },
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "always",
+      "source.fixAll.ts": "always"
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "biomejs.biome"
+    },
+    "typescript.tsdk": "node_modules\\typescript\\lib"
+  }
 }

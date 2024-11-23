@@ -1,0 +1,13 @@
+@import "tailwindcss" source("../app");
+
+@theme {
+  --font-sans: "Press Start 2P", "sans-serif";
+  --color-background: #0c0d0c;
+  --color-border: #131413;
+}
+
+
+body {
+  @apply bg-background text-white;
+}
+
