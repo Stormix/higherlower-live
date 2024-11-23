@@ -1,4 +1,6 @@
-@import "tailwindcss" source("../app");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {
@@ -9,25 +11,9 @@
   }
 }
 
-@theme {
-  --font-sans: "Press Start 2P", "sans-serif";
-  --font-display: "Inter", "sans-serif";
-  --color-background: #0c0d0c;
-  --color-border: #131413;
-  --color-primary: #35B96A;
-  --color-twitch: #6441A5;
-  --color-twitch-dark: #543787;
-  --color-muted: #808080;
-  
-  --color-gradient: linear-gradient(101deg, hsl(var(--chatexto)) 10%, hsl(var(--chatexto-yellow)) 92.73%);
-
-}
-
 body {
-  background-color: #0c0d0c;
-  @apply bg-background text-white;
+  @apply bg-background text-white font-custom;
 }
-
 
 .text-gradient {
   background: linear-gradient(101deg, hsl(var(--chatexto)) 10%, hsl(var(--chatexto-yellow)) 92.73%);
@@ -45,8 +31,8 @@ body {
 }
 
 /**
-  * Custom Scrollbar
-  */
+ * Custom Scrollbar
+ */
 
 /* Firefox */
 * {

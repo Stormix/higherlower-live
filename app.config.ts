@@ -1,4 +1,3 @@
-import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "@tanstack/start/config";
 import { join } from "node:path";
 import type { App } from "vinxi";
@@ -12,7 +11,6 @@ const config = {
 const app = defineConfig({
   vite: {
     plugins: [
-      tailwindcss(),
       tsConfigPaths({
         projects: ["./tsconfig.json"],
       }),

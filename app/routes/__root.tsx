@@ -3,6 +3,7 @@ import { NotFound } from "@/components/organisms/not-found";
 import { WebSocketProvider } from "@/components/organisms/providers/ws";
 import { authQueryOptions } from "@/lib/client/auth.query";
 import type { RouterContext } from "@/router";
+import appCss from "@/styles/globals.css?url";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Outlet, ScrollRestoration, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
@@ -30,6 +31,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         title: "HigherOrLower - For Twitch Chat",
       },
     ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   component: RootComponent,
   notFoundComponent: () => <NotFound />,
