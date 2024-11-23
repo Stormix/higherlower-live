@@ -6,7 +6,7 @@ export default defineConfig({
     experimental: {
       websocket: true,
     },
-    preset: 'vercel',
+    preset: 'bun',
   }
 }).addRouter({
   name: 'websocket',
