@@ -66,8 +66,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-          ${{ secrets.DOCKER_USERNAME }}/higherlower-live:latest
-          labels: ${{ steps.meta.outputs.labels }}
+            ${{ secrets.DOCKER_USERNAME }}/higherlower-live:latest
+            labels: ${{ steps.meta.outputs.labels }}
       # ${{ secrets.DOCKER_USERNAME }}/higherlower-live:${{ env.version }}
       # - name: Push new release
       #   run: |
