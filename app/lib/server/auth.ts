@@ -13,4 +13,5 @@ export const auth = betterAuth({
       clientSecret: env.TWITCH_CLIENT_SECRET,
     },
   },
+  baseURL: env.BETTER_AUTH_URL,
 });

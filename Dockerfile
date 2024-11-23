@@ -1,11 +1,16 @@
 FROM oven/bun:1.1.36 AS base
 WORKDIR /usr/src/app
+
+ARG BETTER_AUTH_URL
+ENV BETTER_AUTH_URL ${BETTER_AUTH_URL}
+
 RUN apt-get -y update; apt-get -y install curl
 ARG NODE_VERSION=20.18.0
 RUN curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
 RUN bash n $NODE_VERSION
 RUN rm n
 RUN npm install -g n
+
 
 FROM base AS install
 RUN mkdir -p /temp/dev

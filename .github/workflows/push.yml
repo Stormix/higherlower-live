@@ -68,6 +68,8 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/higherlower-live:latest
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            BETTER_AUTH_URL=https://higherlower.stormix.dev
       # ${{ secrets.DOCKER_USERNAME }}/higherlower-live:${{ env.version }}
       # - name: Push new release
       #   run: |
