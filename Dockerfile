@@ -1,10 +1,17 @@
 FROM oven/bun:1.1.36 AS base
 WORKDIR /usr/src/app
+RUN apt-get -y update; apt-get -y install curl
+ARG NODE_VERSION=20.18.0
+RUN curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
+RUN bash n $NODE_VERSION
+RUN rm n
+RUN npm install -g n
 
 FROM base AS install
 RUN mkdir -p /temp/dev
-COPY package.json bun.lockb /temp/dev/
+COPY package.json bun.lockb prisma /temp/dev/
 RUN cd /temp/dev && bun install --frozen-lockfile
+RUN cd /temp/dev && bunx prisma generate
 
 RUN mkdir -p /temp/prod
 COPY package.json bun.lockb /temp/prod/
