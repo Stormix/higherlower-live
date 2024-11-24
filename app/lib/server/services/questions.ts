@@ -1,8 +1,8 @@
-import type { Question, Stat } from "@/types/question";
-import fs from "node:fs";
-import path from "node:path";
+import type { Question } from "@/types/question";
+import type { Stat } from "@prisma/client";
+import { db } from "../db";
 
-const QUESTIONS_FILE = path.join(process.cwd(), "app", "data", "results.json");
+const bigIntMax = (...args: bigint[]) => args.reduce((m, e) => (e > m ? e : m));
 
 class QuestionsService {
   stats: Stat[] = [];
@@ -13,8 +13,7 @@ class QuestionsService {
 
   async loadStats() {
     if (this.stats.length > 0) return;
-    const data = fs.readFileSync(QUESTIONS_FILE, "utf8");
-    this.stats = JSON.parse(data) as Stat[];
+    this.stats = await db.stat.findMany();
   }
 
   async getRandomStat(): Promise<Stat> {
@@ -37,7 +36,7 @@ class QuestionsService {
     return options.findIndex(
       (option) =>
         option.searchVolume ===
-        Math.max(...options.map((option) => option.searchVolume))
+        bigIntMax(...options.map((option) => option.searchVolume))
     );
   }
 

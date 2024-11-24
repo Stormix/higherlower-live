@@ -1,10 +1,4 @@
-export interface Stat {
-  keyword: string;
-  searchVolume: number;
-  author: string;
-  link: string;
-  image: string;
-}
+import type { Stat } from "@prisma/client";
 
 export interface Question {
   options: Stat[];
