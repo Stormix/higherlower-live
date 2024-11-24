@@ -14,7 +14,7 @@ class QuestionsService {
   async loadStats() {
     if (this.stats.length > 0) return;
     const data = fs.readFileSync(QUESTIONS_FILE, "utf8");
-    this.stats = JSON.parse(data);
+    this.stats = JSON.parse(data) as Stat[];
   }
 
   async getRandomStat(): Promise<Stat> {
@@ -49,6 +49,22 @@ class QuestionsService {
     return {
       options,
       answer: this.answerQuestion(options),
+    };
+  }
+
+  async getStat(keyword: string): Promise<Stat | null> {
+    await this.loadStats();
+    return this.stats.find((stat) => stat.keyword === keyword) ?? null;
+  }
+
+  async getQuestionByKeywords(keywords: string[]): Promise<Question | null> {
+    const options = await Promise.all(
+      keywords.map((keyword) => this.getStat(keyword))
+    );
+    if (options.some((option) => option === null)) return null;
+    return {
+      options: options as Stat[],
+      answer: this.answerQuestion(options as Stat[]), // Stupid that TS doesn't infer this
     };
   }
 }

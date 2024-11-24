@@ -1,3 +1,4 @@
+import type { OptionDto } from "@/lib/dto/question";
 import type { TwitchMessage } from "./twitch";
 
 export type MessageType =
@@ -10,25 +11,19 @@ export type MessageType =
   | "votes"
   | "endGame";
 
-export type Option = {
-  label: string;
-  image: string;
-  votes: number;
-};
-
 export type MessageData = {
   subscribe: { channel: string };
   unsubscribe: { channel: string };
   twitchMessage: TwitchMessage;
-  // biome-ignore lint/complexity/noBannedTypes: <explanation>
   connected: {};
   play: { userId: string; lastGameId?: string };
   startGame: {
-    options: Option[];
+    options: OptionDto[];
     gameId: string;
+    endsAt: string;
   };
   endGame: { gameId: string; winner: string; answer: number };
-  votes: { options: Option[]; gameId: string };
+  votes: { options: OptionDto[]; gameId: string };
 };
 
 export type Message = {

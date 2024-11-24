@@ -1,4 +1,4 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/start";
 import { getEvent } from "vinxi/http";
 
@@ -14,5 +14,6 @@ export const authQueryOptions = () =>
   });
 
 export const useAuthQuery = () => {
-  return useSuspenseQuery(authQueryOptions());
+  const { data } = useQuery(authQueryOptions());
+  return data?.user ?? null;
 };

@@ -1,24 +1,22 @@
-import type { Message, Option } from "@/types/socket";
-import { type ReactNode, createContext, useContext, useEffect, useState } from "react";
+import { useVotesQuery } from "@/lib/client/question.query";
+import { type GameState, useGameStore } from "@/lib/client/store/game";
+import type { Message } from "@/types/socket";
+import { type ReactNode, createContext, useContext, useEffect, useRef } from "react";
 import { useWebSocket } from "./ws";
 
-interface GameContextType {
-  isStarted: boolean;
-  options: Array<Option> | null;
-  answer: number | null;
-  gameId: string | null;
-  winner: string | null;
-  timeElapsed: number;
+interface GameContextType
+  extends Pick<GameState, "isStarted" | "options" | "gameId" | "winner" | "timeElapsed" | "answer" | "duration"> {
   start: (userId: string, lastGameId?: string) => void;
 }
 
 const GameContext = createContext<GameContextType>({
   isStarted: false,
-  options: null,
-  answer: null,
+  options: [],
+  answer: undefined,
   gameId: null,
-  winner: null,
+  winner: undefined,
   timeElapsed: 0,
+  duration: 0,
   start: () => {},
 });
 
@@ -30,16 +28,30 @@ interface GameProviderProps {
 
 export function GameProvider({ children }: GameProviderProps) {
   const { socket } = useWebSocket();
-  const [isStarted, setIsStarted] = useState(false);
-  const [options, setOptions] = useState<Array<Option> | null>(null);
-  const [answer, setAnswer] = useState<number | null>(null);
-  const [gameId, setGameId] = useState<string | null>(null);
-  const [winner, setWinner] = useState<string | null>(null);
-  const [timeElapsed, setTimeElapsed] = useState(0);
-  const [timer, setTimer] = useState<NodeJS.Timer | null>(null);
+  const {
+    isStarted,
+    options,
+    answer,
+    gameId,
+    winner,
+    duration,
+    timeElapsed,
+    setOptions,
+    setDuration,
+    reset,
+    startGame,
+    setIsStarted,
+    setAnswer,
+    setWinner,
+    updateVotes,
+  } = useGameStore();
+
+  const timerRef = useRef<Timer | null>(null);
+  const { data: gameVotes, refetch } = useVotesQuery(gameId);
 
   const start = (userId: string, lastGameId?: string) => {
-    if (!socket) return;
+    if (!socket || isStarted) return;
+    resetGame();
     socket.send(
       JSON.stringify({
         type: "play",
@@ -48,17 +60,29 @@ export function GameProvider({ children }: GameProviderProps) {
     );
   };
 
-  const resetGame = () => {
-    setIsStarted(false);
-    setOptions(null);
-    setGameId(null);
-    setWinner(null);
-    setTimeElapsed(0);
-    if (timer) {
-      clearInterval(timer);
-      setTimer(null);
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
   };
+  const resetGame = () => {
+    reset();
+    clearTimer();
+  };
+
+  // Why so many useEffect? well, you're not meant to use a second
+  // store for this and rely on derived state from react-query.
+  // But I'm too lazy to change it now.
+  useEffect(() => {
+    updateVotes(gameVotes.votes);
+    if (gameVotes.answer !== null && gameVotes.answer !== undefined) {
+      setAnswer(gameVotes.answer);
+    }
+    if (gameVotes.winner !== undefined && gameVotes.winner !== null) {
+      setWinner(gameVotes.winner);
+    }
+  }, [gameVotes, updateVotes, setAnswer, setWinner]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -70,25 +94,27 @@ export function GameProvider({ children }: GameProviderProps) {
       switch (message.type) {
         case "startGame": {
           resetGame();
-          setIsStarted(true);
-          setOptions(message.payload.options);
-          setGameId(message.payload.gameId);
+          startGame({
+            isStarted: true,
+            options: message.payload.options,
+            gameId: message.payload.gameId,
+            duration: (new Date(message.payload.endsAt).getTime() - Date.now()) / 1000,
+          });
 
           // Start timer
           const interval = setInterval(() => {
-            setTimeElapsed((prev) => prev + 1);
+            setDuration((prevDuration) => {
+              if (prevDuration - 1 <= 0 && timerRef.current) {
+                setIsStarted(false);
+                clearTimer();
+                return 0;
+              }
+              return prevDuration - 1;
+            });
+            refetch();
           }, 1000);
-          setTimer(interval);
-          break;
-        }
-        case "endGame": {
-          setWinner(message.payload.winner);
-          setAnswer(message.payload.answer);
 
-          if (timer) {
-            clearInterval(timer);
-            setTimer(null);
-          }
+          timerRef.current = interval;
           break;
         }
         case "votes": {
@@ -101,8 +127,9 @@ export function GameProvider({ children }: GameProviderProps) {
     socket.addEventListener("message", handleMessage);
     return () => {
       socket.removeEventListener("message", handleMessage);
+      clearTimer();
     };
-  }, [socket, timer]);
+  }, [socket]);
 
   return (
     <GameContext.Provider
@@ -113,6 +140,7 @@ export function GameProvider({ children }: GameProviderProps) {
         winner,
         timeElapsed,
         answer,
+        duration,
         start,
       }}
     >

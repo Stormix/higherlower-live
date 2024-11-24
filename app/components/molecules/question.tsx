@@ -1,7 +1,7 @@
 import { useAuthQuery } from "@/lib/client/auth.query";
-import { cn } from "@/lib/utils";
+import { cn, getLoserMessage } from "@/lib/utils";
 import type { Option as OptionType } from "@/types/socket";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { IoPlayOutline } from "react-icons/io5";
 import Button from "../atoms/button";
 import { useGame } from "../organisms/providers/game";
@@ -106,17 +106,21 @@ const QuestionOptions = ({ options, className, winner }: QuestionOptionsProps) =
 const OptionImage = ({ className, option, winner, color }: OptionImageProps) => {
   return (
     <div
-      className={cn("relative w-full", className, {
+      className={cn("relative w-full transition-all duration-500 ease-linear", className, {
         "opacity-50 blur-sm grayscale h-[30%]": winner !== undefined && winner !== color,
         "h-[70%]": winner !== undefined && winner === color,
         "h-1/2": winner === undefined,
       })}
     >
-      <img src={option?.image ?? ""} alt={option?.label ?? ""} className={cn("object-cover w-full h-full")} />
+      <img
+        src={option?.image ?? "/images/top.png"}
+        alt={option?.label ?? "Placeholder"}
+        className={cn("object-cover w-full h-full")}
+      />
       {winner !== undefined && (
         <div
           className={cn(
-            "absolute top-0 left-0 w-full h-full z-10 flex flex-col items-center to-transparent justify-center gap-4",
+            "absolute top-0 left-0 w-full h-full z-10 flex flex-col items-center to-transparent justify-center gap-4 transition-color ease-in-out duration-300",
             {
               "bg-gradient-to-b from-red/50 items-start": color === "red",
               "bg-gradient-to-t from-blue/50 items-end": color === "blue",
@@ -129,8 +133,9 @@ const OptionImage = ({ className, option, winner, color }: OptionImageProps) => 
 };
 
 const Question = ({ className }: QuestionProps) => {
-  const { answer, options, gameId, start, isStarted, winner: winnerUsername } = useGame();
-  const { data: auth } = useAuthQuery();
+  const { answer, options, gameId, start, winner: winnerUsername } = useGame();
+  const [firstGame, setFirstGame] = useState(true);
+  const user = useAuthQuery();
   const winner = useMemo(() => {
     switch (answer) {
       case 0:
@@ -147,10 +152,8 @@ const Question = ({ className }: QuestionProps) => {
     options: options ?? [],
   };
 
-  console.table({ answer, options, gameId, start, isStarted, winnerUsername, winner });
-
   return (
-    <div className={cn("flex flex-col items-center h-full relative", className)}>
+    <div className={cn("flex flex-col items-center h-full relative transition-all duration-500", className)}>
       <OptionImage option={question.options?.[0]} color="blue" winner={winner} />
       <OptionImage option={question.options?.[1]} color="red" winner={winner} />
 
@@ -165,21 +168,28 @@ const Question = ({ className }: QuestionProps) => {
         })}
       />
 
-      {!isStarted && (
+      {firstGame && (
         <div className="absolute top-0 left-0 w-full h-full bg-black/75 z-30 backdrop-blur-lg flex flex-col items-center justify-center gap-4">
           <p className="text-center text-white text-2xl">Are you ready?</p>
-          {/* biome-ignore lint/style/noNonNullAssertion: <explanation> */}
-          <Button icon={<IoPlayOutline size={24} />} onClick={() => start(auth!.user.id!, gameId ?? undefined)}>
+          <Button
+            icon={<IoPlayOutline size={24} />}
+            onClick={() => {
+              setFirstGame(false);
+              start(user?.id!, gameId ?? undefined);
+            }}
+          >
             Start Game
           </Button>
         </div>
       )}
 
-      {winner !== undefined && isStarted && (
+      {winner !== undefined && (
         <div className="absolute top-0 left-0 w-full h-full  z-30  flex flex-col items-center justify-center gap-4">
           <p className="text-center text-white">1st</p>
-          <p className="text-center text-white text-2xl">{winnerUsername}</p>
-          <Button size="small">Next Question</Button>
+          <p className="text-center text-white text-2xl">{winnerUsername ?? getLoserMessage()}</p>
+          <Button size="small" onClick={() => start(user?.id!, gameId ?? undefined)}>
+            Next Question
+          </Button>
         </div>
       )}
     </div>

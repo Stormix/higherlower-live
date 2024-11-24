@@ -1,4 +1,5 @@
 import { db } from "../db";
+import gameService from "./game";
 
 class VotesService {
   async vote(channel: string, username: string, message: string) {
@@ -20,14 +21,7 @@ class VotesService {
         return;
       }
 
-      const game = await db.game.findFirst({
-        where: {
-          userId: user.id,
-          endsAt: {
-            gt: new Date(),
-          },
-        },
-      });
+      const game = await gameService.getOngoingGame(user.id);
 
       if (!game) {
         console.warn("No active game found for user:", channel);
@@ -57,7 +51,7 @@ class VotesService {
     }
   }
 
-  async getVotes(gameId: string): Promise<number[]> {
+  async getVotes(gameId: string): Promise<[number, number]> {
     try {
       const votes = await db.vote.groupBy({
         by: ["answer"],
@@ -70,7 +64,7 @@ class VotesService {
       });
 
       // Initialize array with zeros for both options
-      const results = [0, 0];
+      const results: [number, number] = [0, 0];
 
       // Fill in the actual vote counts
       for (const vote of votes) {
