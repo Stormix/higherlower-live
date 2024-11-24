@@ -35,8 +35,9 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   };
 
   useEffect(() => {
-    const endpoint = import.meta.env.VITE_APP_URL ?? "localhost:3000";
-    const wsEndpoint = `ws://${endpoint.replace(/^https?:\/\//, "")}/ws`;
+    const endpoint = import.meta.env.VITE_APP_URL ?? "http://localhost:3000";
+    const wsProtocol = endpoint.startsWith("https") ? "wss" : "ws";
+    const wsEndpoint = `${wsProtocol}://${endpoint.replace(/^https?:\/\//, "")}/ws`;
     const ws = new WebSocket(wsEndpoint);
 
     ws.onopen = () => {
