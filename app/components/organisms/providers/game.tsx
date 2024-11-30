@@ -1,3 +1,4 @@
+import { useLeaderboardQuery } from "@/lib/client/leaderboard.query";
 import { useVotesQuery } from "@/lib/client/question.query";
 import { type GameState, useGameStore } from "@/lib/client/store/game";
 import type { Message } from "@/types/socket";

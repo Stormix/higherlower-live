@@ -3,9 +3,9 @@ import type { Peer } from "crossws";
 import { toGameDto } from "../../dto/question";
 import { sendMessage } from "../utils";
 import gameService from "./game";
+import rewardService from "./reward";
 import { twitchService } from "./twitch";
 import { votesService } from "./votes";
-
 class WebSocketService {
   async processMessage(message: Message, peer: Peer) {
     switch (message.type) {
@@ -31,6 +31,10 @@ class WebSocketService {
 
         if (!userId) {
           return;
+        }
+
+        if (previousGameId) {
+          await rewardService.rewardStreamer(previousGameId);
         }
 
         const { game, question } = await gameService.createGame(

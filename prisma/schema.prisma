@@ -18,6 +18,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   games         Game[]
+  points        Int     @default(0)
 
   @@unique([email])
   @@map("user")
@@ -83,11 +84,22 @@ model Game {
   votes     Vote[]
 
   duration  Int      @default(45)
+  prize     Int      @default(0)
   createdAt DateTime
   endsAt   DateTime
   updatedAt DateTime
 
   @@unique([userId, createdAt]) // TODO: Check if this is correct
+}
+
+model Participant {
+  id        String    @id @default(cuid())
+  username  String
+  points    Int     @default(0)
+  createdAt DateTime
+  updatedAt DateTime
+
+  @@unique([username])
 }
 
 

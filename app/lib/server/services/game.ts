@@ -36,7 +36,7 @@ class GameService {
     if (!game) return null;
     return {
       answer: game.endsAt < new Date() ? game.answer : null,
-      winner: await this.getWinner(game),
+      winner: game.endsAt < new Date() ? await this.getWinner(game) : null,
     };
   }
 
@@ -58,13 +58,16 @@ class GameService {
     const previousGame = await db.game.findUnique({
       where: { id: previousGameId },
     });
-    if (!previousGame) return questionsService.getQuestion();
+
+    if (!previousGame || Math.random() < 0.5)
+      return questionsService.getQuestion();
+
     return questionsService.getFollowUpQuestion(
       previousGame.options?.[previousGame?.answer]
     );
   }
 
-  async createGame(userId: string, previousGameId?: string, duration = 2000) {
+  async createGame(userId: string, previousGameId?: string, duration = 35000) {
     const ongoingGame = await this.getOngoingGame(userId);
     if (ongoingGame)
       return {

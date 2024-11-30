@@ -1,3 +1,4 @@
+import { useLeaderboardQuery } from "@/lib/client/leaderboard.query";
 import { cn } from "@/lib/utils";
 import { BsChatLeftFill } from "react-icons/bs";
 import { PiTwitchLogoFill } from "react-icons/pi";
@@ -9,22 +10,8 @@ interface LeftSidebarProps {
   className?: string;
 }
 
-const dummyPlayers = [
-  {
-    name: "Stormix",
-    score: 100,
-  },
-  {
-    name: "Maadlou",
-    score: 80,
-  },
-  {
-    name: "EKB9816",
-    score: 70,
-  },
-];
-
 const LeftSidebar = ({ className }: LeftSidebarProps) => {
+  const { data } = useLeaderboardQuery();
   return (
     <div className={cn(className)}>
       <ResizablePanelGroup direction="vertical">
@@ -40,7 +27,7 @@ const LeftSidebar = ({ className }: LeftSidebarProps) => {
                 Streamers Leaderboard
               </>
             }
-            players={dummyPlayers.slice(0, 4)}
+            players={data?.streamers.slice(0, 5) ?? []}
           />
           <Leaderboard
             className="flex-1"
@@ -50,7 +37,7 @@ const LeftSidebar = ({ className }: LeftSidebarProps) => {
                 Chat Leaderboard
               </>
             }
-            players={dummyPlayers}
+            players={data?.viewers.slice(0, 5) ?? []}
           />
         </ResizablePanel>
       </ResizablePanelGroup>

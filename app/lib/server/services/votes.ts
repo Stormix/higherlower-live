@@ -1,5 +1,7 @@
+import { BASE_STREAMER_PENALTY, BASE_STREAMER_REWARD } from "../../config";
 import { db } from "../db";
 import gameService from "./game";
+import rewardService from "./reward";
 
 class VotesService {
   async vote(channel: string, username: string, message: string) {
@@ -45,6 +47,41 @@ class VotesService {
           updatedAt: new Date(),
         },
         update: {},
+      });
+
+      const points = await rewardService.getReward(
+        game,
+        game.answer === answer
+      );
+
+      // Award points and upsert participant
+      await db.participant.upsert({
+        where: {
+          username: username.toLowerCase(),
+        },
+        create: {
+          username: username.toLowerCase(),
+          points,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        update: {
+          points: {
+            increment: points,
+          },
+        },
+      });
+
+      await db.game.update({
+        where: { id: game.id },
+        data: {
+          prize: {
+            increment:
+              game.answer === answer
+                ? BASE_STREAMER_REWARD
+                : -BASE_STREAMER_PENALTY,
+          },
+        },
       });
     } catch (error) {
       console.error(error);
